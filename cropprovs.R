@@ -14,10 +14,11 @@ unique(ocan$PRNAME)
 # length(ocan)
 # nrow(ocan)
 
-edgebo <- c("New Brunswick","Quebec","Ontario","Manitoba",
-            "Saskatchewan","Alberta","British Columbia")
-  
-edge <- ocan[ocan$PRENAME %in% edgebo,]
+#### Naming convention of a province-boundaries-only file w
+# edgebo <- c("New Brunswick","Quebec","Ontario","Manitoba",
+#             "Saskatchewan","Alberta","British Columbia")
+#   
+# edge <- ocan[ocan$PRENAME %in% edgebo,]
 
 edgeboduo <- c("New Brunswick / Nouveau-Brunswick","Quebec / Québec","Ontario","Manitoba",
                "Saskatchewan","Alberta","British Columbia / Colombie-Britannique")
@@ -27,11 +28,11 @@ edgeboduo <- c("New Brunswick / Nouveau-Brunswick","Quebec / Québec","Ontario",
 
 edge <- ocan[ocan$PRNAME %in% edgeboduo,]
 
-unique(edge$PRNAME)
-
-Manitoba <- edge[edge$PRNAME=="Manitoba",]
-Quebec <- edge[edge$PRNAME=="Quebec / Québec",]
-
+# unique(edge$PRNAME)
+# 
+# Manitoba <- edge[edge$PRNAME=="Manitoba",]
+# Quebec <- edge[edge$PRNAME=="Quebec / Québec",]
+# 
 
 # write_sf(Quebec,"quebec.shp")
 # write_sf(Quebec,"quebec.kml")
@@ -88,19 +89,22 @@ Berta <- clipprov(Alberta)
 Toba <- clipprov(Manitoba)
 Lumbia <- clipprov(BritishCol)
 
+### These names are the bottom part of the provinces at the border
 
-
-Bec <- clipprov(Quebec, upper_lat = 55.0)
-Wick <- clipprov(NewBrunswick, upper_lat = 55.0)
-Rio <- clipprov(Ontario, upper_lat = 55.0)
-Chewan <- clipprov(Saskatchewan, upper_lat = 55.0)
-Berta <- clipprov(Alberta, upper_lat = 55.0)
-Toba <- clipprov(Manitoba, upper_lat = 55.0)
-Lumbia <- clipprov(BritishCol, upper_lat = 55.0)
-
-
-plot(st_geometry(Rio))
-
+# This totally had problems with missing polygons
+# 
+# 
+# Bec <- clipprov(Quebec, upper_lat = 54.660)
+# Wick <- clipprov(NewBrunswick, upper_lat = 54.660)
+# Rio <- clipprov(Ontario, upper_lat = 54.660)
+# Chewan <- clipprov(Saskatchewan, upper_lat = 54.660)
+# Berta <- clipprov(Alberta, upper_lat = 54.660)
+# Toba <- clipprov(Manitoba, upper_lat = 54.660)
+# Lumbia <- clipprov(BritishCol, upper_lat = 54.660)
+# 
+# 
+# plot(st_geometry(Rio))
+# 
 # Bec <- st_union(Bec)
 # Wick <- st_union(Wick)
 # Lumbia <- st_union(Lumbia)
@@ -109,27 +113,28 @@ plot(st_geometry(Rio))
 
 # write_sf(mostest, "~/Downloads/Canadaseas.shp")
 
-can7 <- rbind(Berta,Lumbia,Toba,Wick,Rio,Bec,Chewan)
-write_sf(can7,"ocanada.shp")
-
-can7 <- rbind(Berta,dryLumbia,Toba,dryWick,dryRio,Bec,Chewan)
-write_sf(can7,"ocanada1.shp")
-
-canprov <- rbind(Berta,Lumbia,Toba,Wick,Rio,Bec,Chewan)
-write_sf(canprov,"SoCanada.shp")
-
-canprovWest <- rbind(Berta,Lumbia,Toba,Chewan)
-write_sf(canprovWest,"SoCanadaWest.shp")
-
-canprovEast <- rbind(Bec,Wick)
-write_sf(canprovEast,"SoCanadaEast.shp")
-
-plot(st_geometry(Toba))
-plot(st_geometry(Bec))
-
-plot(st_geometry(Rio))
-
-plot(st_geometry(Lumbia))
+##### Some testing code that worked out great
+# can7 <- rbind(Berta,Lumbia,Toba,Wick,Rio,Bec,Chewan)
+# write_sf(can7,"ocanada.shp")
+# 
+# can7 <- rbind(Berta,dryLumbia,Toba,dryWick,dryRio,Bec,Chewan)
+# write_sf(can7,"ocanada1.shp")
+# 
+# canprov <- rbind(Berta,Lumbia,Toba,Wick,Rio,Bec,Chewan)
+# write_sf(canprov,"SoCanada.shp")
+# 
+# canprovWest <- rbind(Berta,Lumbia,Toba,Chewan)
+# write_sf(canprovWest,"SoCanadaWest.shp")
+# 
+# canprovEast <- rbind(Bec,Wick)
+# write_sf(canprovEast,"SoCanadaEast.shp")
+# 
+# plot(st_geometry(Toba))
+# plot(st_geometry(Bec))
+# 
+# plot(st_geometry(Rio))
+# 
+# plot(st_geometry(Lumbia))
 
 
 ### Ok now we are working with Rio
@@ -153,6 +158,8 @@ plot(SuperLake, add=TRUE)
 
 S1 <- st_union(SuperLake)
 
+
+#### Clip Ontario bottom by the lakes
 # plot(S1)
 dryRio <- st_difference(Rio,S1)
 
@@ -169,6 +176,7 @@ dryRio <-st_difference(dryRio,O1)
 dryRio <-st_difference(dryRio,E1)
 
 # plot(st_geometry(dryRio))
+#### Done ontario
 
 singleRio <- st_union(dryRio)
 
@@ -189,6 +197,9 @@ dataset <- st_read('ocean/lhy_000h16a_e.shp',
 
 str(dataset)
 
+### So in case you are wondering, I just looked up some of the HYDROUIDS on the coasts
+###  by reading the dataset file into a mapping application and wrote them down by hand
+
 BC_seas <- dataset %>%
   filter(HYDROUID %in% c("255429","372687","467753","8200053",
                          "401999","379613","235633","255430"))
@@ -208,6 +219,7 @@ write_sf(pacific,"pacific_clip.shp")
 
 write_sf(pacific1,"pclip1.shp")
 
+#### Clip BC by Pacific
 dryBC <- st_difference(Lumbia,pacific1)
 dryLumbia <- dryBC
 
@@ -216,7 +228,7 @@ write_sf(dryBC, "dryBC.shp")
 
 ### Brunswiick Atlantic Ocean 
 
-NewBrunseas <- dataset %>%    ## "8201412" atlantic
+NewBrunseas <- dataset %>%    ## "8201412" atlantic huge polygon just left that one out
   filter(HYDROUID %in% c("7714368","8205527","6286890",
                          "6566044","6765876","7150841","8200077","8065668"))
 
@@ -240,21 +252,22 @@ dryRio <- read_sf("CanadaDryShapes/DryRio.shp")
   
 can7 <- rbind(Berta,dryLumbia,Toba,dryWick,dryRio,Bec,Chewan)
 write_sf(can7,"ocanada2.shp")
+write_sf(can7,"~/Downloads/ocanadat.shp")
 
 
 
 
-Berta<- st_union(Berta)
-dryLumbia<- st_union(dryLumbia)
-Toba<- st_union(Toba)
-dryWick<- st_union(dryWick)
-dryRio<- st_union(dryRio)
-Bec<- st_union(Bec)
-
-Chewan<- st_union(Chewan)
-
-can7tall <- rbind(Berta,dryLumbia,Toba,dryWick,dryRio,Bec,Chewan)
-write_sf(can7,"ocanada4.shp")
+# Berta<- st_union(Berta)
+# dryLumbia<- st_union(dryLumbia)
+# Toba<- st_union(Toba)
+# dryWick<- st_union(dryWick)
+# dryRio<- st_union(dryRio)
+# Bec<- st_union(Bec)
+# Chewan<- st_union(Chewan)
+# 
+# can7t <- rbind(Berta,dryLumbia,Toba,dryWick,dryRio,Bec,Chewan)
+# write_sf(can7t,"ocanadat.shp")
+# write_sf(can7t,"~/Downloads/ocanadat.shp")
 
 
 plot(st_geometry(dryRio))
